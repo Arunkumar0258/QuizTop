@@ -3,6 +3,21 @@ const async = require('async')
 const Student = require('../models/user');
 const passport = require('passport')
 const passConfig = require('../configs/passportconf');
+const multer = require('multer');
+const path = require('path');
+
+var storage = multer.diskStorage({
+	destination: function(req, file, callback) {
+		callback(null, './public/uploads')
+	},
+	filename: function(req, file, callback) {
+		console.log(file)
+		callback(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+	}
+})
+const upload = multer({dest: 'public/uploads/',
+    storage: storage
+})
 
 router.route('/signup')
 .post(function(req, res, next) {
@@ -24,7 +39,7 @@ router.route('/signup')
                 }
                 else {
                     Student.create(userData, function(err, small) {
-                        if (err) return res.status(400).send('Something went wrong');
+                        if (err) return next(new Error('Something is wrong'));
                         else return res.redirect('/')
                     })
                 }
@@ -60,14 +75,29 @@ router.route('/').get(function(req,res,next) {
     res.render('html/home');
 })
 
-router.route('/profile').get(isLoggedIn, function(req,res,next) {
-    res.render('html/profile');
+router.route('/profile').get(function(req,res,next) {
+    res.render('html/profile',{user: req.user});
 })
 
-function isLoggedIn(req,res,next) {
-    if(req.isAuthenticated())
-        return next()
-    res.redirect('/')
-}
+router.route('/update').post(upload.single('avatar'), function(req,res,next) {
+    Student.update({username: req.user.username}, {
+        profile: {photopath: req.file.filename,
+                age: req.body.age,
+        },
+        email: req.body.email,
+        phone: req.body.phone,
+    }, function(err) {
+        if(err) return next(err);
+        return res.redirect('/profile')
+    })
+}).get(function(req,res,next) {
+    return res.render('html/update-profile');
+})
+
+// function isLoggedIn(req,res,next) {
+//     if(req.isAuthenticated())
+//         return next()
+//     res.redirect('/')
+// }
 
 module.exports = router;

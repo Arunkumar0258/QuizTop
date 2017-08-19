@@ -4,16 +4,17 @@ const bcrypt = require('bcrypt-nodejs');
 const Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-    username: {type: String, unique: true, lowercase: true},
-    email: {type: String, unique: true},
-    phone: {type: Number, unique: true},
+    username: {type: String, lowercase: true},
+    email: {type: String},
+    phone: {type: Number},
     password: {type: String},
     profile: {
         name: {type: String, default: ''},
         age: Number,
         sex: {type: String, default: ''},
         marks: {type: Number, default: 0},
-        comments: {type: String, default: ''}
+        comments: {type: String, default: ''},
+        photopath: {type: String, default:''},
     }
 })
 

@@ -21,8 +21,8 @@ mongoose.connect(config.dbUrl, function(err) {
     if(err) console.log(err.stack);
     console.log('Connected to database at ' + config.dbUrl)
 })
-
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static('public'))
+// app.use(express.static(path.join(__dirname, 'public')))
 app.use(morgan('dev'));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
@@ -38,6 +38,11 @@ require('./configs/passportconf')(passport)
 
 app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs')
+
+app.use(function(req,res,next) {
+    res.locals.login = req.isAuthenticated();
+    next();
+})
 
 app.use(mainRoutes);
 app.use('/api',apiRoutes);

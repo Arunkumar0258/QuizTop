@@ -22,8 +22,13 @@
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li> <a href="/signup" > SignUp </a> </li>
-                <li> <a href="/login" id="logintag"> Login </a> </li>
+                <% if(login) { %>
+                    <li> <a href="/profile" > Profile </a> </li>
+                    <li> <a href="/logout" id="logintag"> Logout </a> </li>
+                <% } else{ %>
+                    <li> <a href="/signup" > SignUp </a> </li>
+                    <li> <a href="/login" id="logintag"> Login </a> </li>
+                <% } %>
             </ul>
         </div>
     </div>
